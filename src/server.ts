@@ -1,7 +1,7 @@
 import fastify from 'fastify';
 import {kknex} from './database';
 import crypto from 'node:crypto';
-
+import env from './env';
 const app = fastify();
 
 app.get('/hello', async()=>{
@@ -18,4 +18,4 @@ app.get('/hello', async()=>{
     return transactions
 })
 
-app.listen({port:3333}).then(()=>console.log('HTTP Server Running!'))
+app.listen({port:env.PORT}).then(()=>console.log('HTTP Server Running!'))
