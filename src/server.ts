@@ -4,7 +4,6 @@ import crypto from 'node:crypto';
 import fastify from 'fastify';
 import cookie from '@fastify/cookie';
 
-import {kknex} from './database';
 import { transactionsRoutes } from './routes/transactions';
 
 const app = fastify();
