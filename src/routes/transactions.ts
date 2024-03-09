@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify"
 import { kknex } from "../database"
 import {z} from 'zod'
 import { randomUUID } from "node:crypto";
+import { checkSessionIdExists } from "../middlewares/check-session-id-exists";
 
 //Cookies <-> Formas da gente manter contexto entre requisições
 //
@@ -9,25 +10,32 @@ import { randomUUID } from "node:crypto";
 
 export async function transactionsRoutes(app: FastifyInstance){
   //List all transactions
-  app.get('/', async()=>{
-    const transactions = await kknex('transactions').select('*')
+  app.get('/', {preHandler:[checkSessionIdExists]}, async(request, reply)=>{
+    const {sessionId} = request.cookies;
+    const transactions = await kknex('transactions').where('session_id', sessionId).select('*');
     return {
       transactions,
     }
   })
   //Query parms to find specific transaction
-  app.get('/:id', async(request)=>{
+  app.get('/:id',{preHandler:[checkSessionIdExists]}, async(request)=>{
     const getTransactionsParamsSchema = z.object({
       id: z.string().uuid()
     })
     const {id}  = getTransactionsParamsSchema.parse(request.params);
+    const {sessionId} = request.cookies;
 
-    const transactions = await kknex('transactions').where('id',id).first()
+    const transactions = await kknex('transactions')
+    .where({
+      id,
+      session_id:sessionId
+      })
+    .first()
 
     return {transactions}
   })
   //Get summary of transactions
-  app.get('/summary', async()=>{
+  app.get('/summary',{preHandler:[checkSessionIdExists]}, async()=>{
     const summary = await kknex('transactions').sum('amount', {as:'amount'}).first();
     return {summary}
   })
