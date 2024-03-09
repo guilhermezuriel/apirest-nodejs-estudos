@@ -22,6 +22,11 @@ export async function transactionsRoutes(app: FastifyInstance){
     return {transactions}
   })
 
+  app.get('/summary', async()=>{
+    const summary = await kknex('transactions').sum('amount', {as:'amount'}).first();
+    return {summary}
+  })
+
 
   app.post('/', async(request, reply)=>{
     //{title, amount, type}
