@@ -3,15 +3,20 @@ import { kknex } from "../database"
 import {z} from 'zod'
 import { randomUUID } from "node:crypto";
 
+//Cookies <-> Formas da gente manter contexto entre requisições
+//
+
+
 export async function transactionsRoutes(app: FastifyInstance){
-  app.get('/', async(request, reply)=>{
+  //List all transactions
+  app.get('/', async()=>{
     const transactions = await kknex('transactions').select('*')
     return {
       transactions,
     }
   })
-
-  app.get('/:id', async(request, reply)=>{
+  //Query parms to find specific transaction
+  app.get('/:id', async(request)=>{
     const getTransactionsParamsSchema = z.object({
       id: z.string().uuid()
     })
@@ -21,13 +26,13 @@ export async function transactionsRoutes(app: FastifyInstance){
 
     return {transactions}
   })
-
+  //Get summary of transactions
   app.get('/summary', async()=>{
     const summary = await kknex('transactions').sum('amount', {as:'amount'}).first();
     return {summary}
   })
 
-
+  //Create transaction
   app.post('/', async(request, reply)=>{
     //{title, amount, type}
     const createTransactionBodySchema = z.object({
