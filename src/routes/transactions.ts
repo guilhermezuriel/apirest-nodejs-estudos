@@ -9,8 +9,12 @@ import { checkSessionIdExists } from "../middlewares/check-session-id-exists";
 
 
 export async function transactionsRoutes(app: FastifyInstance){
+  /*
+  Handler global de um plugin específico
+   app.addHook('preHandler',checkSessionIdExists)
+  */
   //List all transactions
-  app.get('/', {preHandler:[checkSessionIdExists]}, async(request, reply)=>{
+  app.get('/', {preHandler:[checkSessionIdExists]},async(request, reply)=>{
     const {sessionId} = request.cookies;
     const transactions = await kknex('transactions').where('session_id', sessionId).select('*');
     return {
@@ -57,7 +61,7 @@ export async function transactionsRoutes(app: FastifyInstance){
     //Cookies são parâmetros criados por nossa própria aplicação e enviado entre requisições, ótimo para identicar usuários
     if(!sessionId){
       sessionId = randomUUID();
-      reply.cookie('sessionId', sessionId, {
+      reply.setCookie('sessionId', sessionId, {
         path:'/',
         maxAge: 60 * 60 * 24 * 7, //7 DAYS
       })
