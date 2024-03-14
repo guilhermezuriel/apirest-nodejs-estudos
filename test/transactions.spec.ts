@@ -47,5 +47,27 @@ describe('Transaction routes', ()=>{
         title:'New transaction',
         amount: 5000, })])
     })
+
+    it('Should be to able to get a specific transaction', async()=>{
+      const createTransactionResponse = await request(app.server)
+      .post('/transactions')
+      .send({
+        title:'New transaction',
+        amount: 5000,
+        type:'credit'
+      })
+  
+      const cookies = createTransactionResponse.get('Set-Cookie');
+  
+      const listTransactionResponse = await request(app.server).get('/transactions').set('Cookie', cookies).expect(200);
+
+      const transactionId = listTransactionResponse.body.transactions[0].id;
+
+      const getTransactionResponse = await request(app.server).get(`/transactions/${transactionId}`).set('Cookie', cookies).expect(200)
+  
+      expect(getTransactionResponse.body.transactions).toEqual(
+        expect.objectContaining({
+          id:transactionId}))
+      })
 })
 
