@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import {z} from 'zod';
 
-
 //Zod realiza validação de tipagem, evitando validações desnecessárias em database.ts
 const envSchema = z.object({
   NODE_ENV: z.enum(['development','test','production']).default('production'),
