@@ -12,7 +12,12 @@ describe('Transaction routes', ()=>{
   afterAll(async()=>{
     await app.close();
   })
-   
+
+  beforeEach(()=>{
+    execSync("npm run knex migrate:rollback -all");
+    execSync("npm run knex migrate:latest")
+  })
+
   it('Should be to create a new transaction',async()=>{
     await request(app.server)
     .post('/transactions')

@@ -1,5 +1,11 @@
-import 'dotenv/config';
+import { config } from 'dotenv';
 import {z} from 'zod';
+
+if(process.env.NODE_ENV === 'test'){
+  config({path:'.env.test'})
+}else{
+  config()
+}
 
 //Zod realiza validação de tipagem, evitando validações desnecessárias em database.ts
 const envSchema = z.object({
